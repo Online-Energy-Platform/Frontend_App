@@ -8,12 +8,20 @@ import DeviceTable from "../device/components/device-table";
 import { withRouter } from "react-router-dom";
 import ViewDeviceConsumptionForm from "./components/view-device-consumption-form";
 import DeleteUserForm from "./components/delete-user-form";
+import SockJsClient from 'react-stomp';
+import {HOST} from "../commons/hosts";
+import {forEach} from "react-bootstrap/ElementChildren";
 
 let initialClient = {
     id: '',
     fullName: '',
     email: '',
     role: ''
+}
+
+let initialNotification = {
+    messageBody: 'No notifications yet!',
+    deviceId: ''
 }
 
 function ClientContainer(props) {
@@ -27,6 +35,7 @@ function ClientContainer(props) {
     // to render the component twice (using setError and setErrorStatus)
     // This approach can be used for linked state variables.
     const [error, setError] = useState({ status: 0, errorMessage: null });
+    const [notification, setNotification] = useState(initialNotification);
 
     // componentDidMount
     useEffect(() => {
@@ -95,12 +104,54 @@ function ClientContainer(props) {
         fetchUser();
     }
 
+    function whenConnected() {
+        console.log("Connected to socket!");
+    }
+    function whenDisconnected() {
+        console.log("Disconnected from the socket!");
+    }
+    function whenReceivedNotification(sentNotification) {
+        let ownsDevice = false;
+        tableData.forEach(deviceTuple => {
+            if(deviceTuple.id === sentNotification.deviceId){
+                console.log(deviceTuple);
+                ownsDevice = true;
+            }
+        })
+        if(ownsDevice){
+            setNotification(sentNotification);
+            console.log("Received notification: " + sentNotification.messageBody +
+                ", pentru device-ul: " + sentNotification.deviceId);
+        }
+    }
+
     return (
         <div>
             <CardHeader>
                 <strong> Client Page </strong>
             </CardHeader>
             <Card>
+                <br/>
+                <Row>
+                    <Col sm={{ size: '8', offset: 1 }}>
+                        <CardHeader>
+                            <strong> Notifications </strong>
+                        </CardHeader>
+                        <Card>
+                            <div>
+                                <SockJsClient
+                                    url={HOST.backend_api + "/notificationServer"}
+                                    topics={['/energyConsumptionSimulation/message']}
+                                    onConnect={whenConnected()}
+                                    onDisconnect={whenDisconnected()}
+                                    onMessage={sentNotification => whenReceivedNotification(sentNotification)}
+                                    debug={false}
+                                />
+                                <div>{notification.messageBody}</div>
+                            </div>
+                        </Card>
+                    </Col>
+                </Row>
                 <br/>
                 <Row>
                     <Col sm={{ size: '8', offset: 1 }}>
