@@ -74,7 +74,6 @@ function ViewDeviceConsumptionForm(props) {
 
 
     function viewDeviceConsumption(params) {
-        console.log("The date: " + params.year + "-" + params.month + "-" + params.day);
         return API_ENERGY.getEnergyConsumptionByDeviceAndDate(params, (result, status, err) => {
             if (result !== null && (status === 200 || status === 201)) {
                 console.log("Successfully returned consumptions...");
@@ -83,7 +82,23 @@ function ViewDeviceConsumptionForm(props) {
                 let energyValues = [];
                 result.forEach(energy => {
                     // FORMAT TIMESTAMP: YYYY-MM-DDTHH-MM-SS -> getMonth() e intre 0 si 11 deci trebuie un "+1";
-                    let selectedDate = value.getFullYear() + '-' + (value.getMonth() + 1) + '-' + value.getDate();
+                    let selectedDate;
+                    if(value.getMonth() + 1 < 10){
+                        if(value.getDate() < 10){
+                            selectedDate = value.getFullYear() + '-' + ('0' + (value.getMonth() + 1)) + '-' + ('0' + value.getDate());
+                        }
+                        else{
+                            selectedDate = value.getFullYear() + '-' + ('0' + (value.getMonth() + 1)) + '-' + value.getDate();
+                        }
+                    }
+                    else{
+                        if(value.getDate() < 10){
+                            selectedDate = value.getFullYear() + '-' + (value.getMonth() + 1) + '-' + ('0' + value.getDate());
+                        }
+                        else{
+                            selectedDate = value.getFullYear() + '-' + (value.getMonth() + 1) + '-' + value.getDate();
+                        }
+                    }
                     let energyDate = energy.timestamp.substr(0, 10)
                     console.log("Selected date: " + selectedDate);
                     console.log("Energy date: " + energyDate);
@@ -110,8 +125,6 @@ function ViewDeviceConsumptionForm(props) {
                 }
 
                 setData(newData);
-                console.log("Timestamps: " + data.series.data);
-                console.log("Energy values: " + data.options.xaxis.categories);
 
             } else {
                 setError((error) => ({ status: status, errorMessage: err }));
