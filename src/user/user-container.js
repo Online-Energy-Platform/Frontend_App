@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {Button, Card, CardHeader, Col, Input, Modal, ModalBody, ModalHeader, Row} from 'reactstrap';
 
 import APIResponseErrorMessage from "../commons/errorhandling/api-response-error-message";
@@ -44,6 +44,7 @@ function UserContainer(props) {
     const [unseenMsg, setUnseenMsg] = useState(false);
     const [typingOrNot, setTypingOrNot] = useState("hidden");
     const [sendTypingNotif, setSendTypingNotif] = useState(true);
+    const endOfMessages = useRef(null);
     /* END */
 
     // Store error status and message in the same object because we don't want 
@@ -64,7 +65,10 @@ function UserContainer(props) {
             }
         }
         fetchUsers();
-    }, []);
+        if(showChat === true){
+            endOfMessages.current.scroll({ top: endOfMessages.current.scrollHeight });
+        }
+    }, [displayedMess]);
 
     function fetchUsers() {
         return API_USERS.getUsers((result, status, err) => {
@@ -288,7 +292,7 @@ function UserContainer(props) {
                                 <Col sm={{ size: '8', offset: 1 }}>
                                     <br/>
                                     <div style={{overflowY: 'scroll', minHeight: '30vh', maxHeight: '30vh', display: 'grid'
-                                        , gridTemplateColumns: '1fr 1fr'}}>
+                                        , gridTemplateColumns: '1fr 1fr'}} ref={endOfMessages}>
                                         {displayedMess}
                                     </div>
                                 </Col>
