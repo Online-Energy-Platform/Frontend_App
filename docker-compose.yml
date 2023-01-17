@@ -3,6 +3,6 @@ version: '3'
 services:
 
   react:
-    image: popalexandra30641frontend.azurecr.io/popalexandra30641frontend:85
+    image: popalexandra30641frontend.azurecr.io/popalexandra30641frontend:89
     ports:
        - "80:80"
