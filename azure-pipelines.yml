@@ -10,9 +10,9 @@ resources:
 
 variables:
   # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: '92ed4d33-eba0-4d18-a6cd-cbe197b51cb2'
-  imageRepository: 'popalexandra30641frontend'
-  containerRegistry: 'popalexandra30641frontend.azurecr.io'
+  dockerRegistryServiceConnection: ''
+  imageRepository: ''
+  containerRegistry: ''
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
 
